@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=postgres
+    volumes:
+      - odoo-db-data:/var/lib/postgresql  # ← Changé : sans /data
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.odoo
+    user: odoo
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./addons:/mnt/extra-addons
+      - ./etc/odoo.conf:/etc/odoo/odoo.conf
+    restart: always
+    
+volumes:
+  odoo-db-data:
+  odoo-web-data:
